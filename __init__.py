@@ -9,6 +9,9 @@ import re
 from re import sub
 from decimal import Decimal
 
+#SETUP :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+
 rssFeed="https://www.upwork.com/ab/feed/topics/rss?securityToken=aa38be043e5b3c12faf6fd43141a2e9caa54842944ec8141f3429cb82c76409946db23d920f6fd3c0a22f0df4424552914102e178c8b7374a6d24de27ef41b02&userUid=796687596739297280&orgUid=796687596743491585"
 
 #case unsensitive keywords
@@ -19,7 +22,10 @@ skillsKeywords=["PHP","Python","CSS","Web Scraping","Modx","Spanish"]
 minimumBudget=400
 
 
-#FUNCTIONS
+#END SETUP :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+
+#FUNCTIONS :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 def getBudget(post):
     try:
@@ -31,6 +37,25 @@ def getBudget(post):
         budget=False
         
     return budget
+
+def convertToRSS(data):
+    S=""
+    for job in selected:
+       S+="<item>"
+       S+='<link>'
+       S+=job.link
+       S+='</link>'
+       S+='<title>'
+       S+=str(job.title.encode('utf-8'))
+       S+='</title>'
+       S+='<description>'
+       S+='<![CDATA['+str(job.content[0].value.decode('utf-8'))+']]>'
+       S+='</description>'
+       S+="</item>"
+    
+    return S
+
+#END FUNCTIONS ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     
 
 feed = feedparser.parse(rssFeed, request_headers={'Cache-control': 'max-age=0'})
@@ -41,11 +66,10 @@ print "Feed has "+str(len(feed.entries))+" items"
 #filter keywords
 for post in feed.entries:
    
-    #print post.title
     for key in titleKeywords:
         if key.upper() in post.title.upper():
             selected.append(post)
-            #print post.title
+          
             
     for key in skillsKeywords:
         if key.upper() in post.content[0].value.upper():
@@ -66,17 +90,9 @@ for i,post in enumerate(selected):
     else:
         tempSelected.append(post)
 
-
-    print ":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"
-    print post.title
- 
-    print ":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"
-    print ""
    
 selected=tempSelected
     
-
-
 #remove duplicates
 seen_titles = set()
 new_list = []
@@ -87,43 +103,21 @@ for obj in selected:
         
 selected=new_list
 
-
 #END
 print ""
 print "SELECTED OFFERS ::::::::::::::"
 print ""
 for i,post in enumerate(selected):
-    #pass
     print post.title
     print post.link
     
-
-
-
 
 if len(selected)==0:
     print "No interesting jobs found"
 
 
-def convertToRSS(data):
-    S=""
-    for job in selected:
-       S+="<item>"
-       S+='<link>'
-       S+=job.link
-       S+='</link>'
-       S+='<title>'
-       S+=str(job.title.encode('utf-8'))
-       S+='</title>'
-       S+='<description>'
-       S+='<![CDATA['+str(job.content[0].value.decode('utf-8'))+']]>'
-       S+='</description>'
-       S+="</item>"
-    
-    return S
-
 output='<rss version="2.0"><channel>'
-output+=convertToRSS(selected)#xmlify(selected, wrap="item", indent="  ")
+output+=convertToRSS(selected)
 output+="</channel></rss> "
 
 text_file = open("/var/www/html/upworkfilter/upworkfiltered.xml", "w")
