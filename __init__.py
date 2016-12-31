@@ -11,6 +11,7 @@ from decimal import Decimal
 
 rssFeed="https://www.upwork.com/ab/feed/topics/rss?securityToken=aa38be043e5b3c12faf6fd43141a2e9caa54842944ec8141f3429cb82c76409946db23d920f6fd3c0a22f0df4424552914102e178c8b7374a6d24de27ef41b02&userUid=796687596739297280&orgUid=796687596743491585"
 
+#case unsensitive keywords
 titleKeywords=["quick","processwire","python","modx","spanish","AI"]
 skillsKeywords=["PHP","Python","CSS","Web Scraping","Modx","Spanish"]
 
@@ -68,7 +69,7 @@ for i,post in enumerate(selected):
 
     print ":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"
     print post.title
-    print budget,minimumBudget,"BUDGET CHECK::"
+ 
     print ":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"
     print ""
    
@@ -89,7 +90,7 @@ selected=new_list
 
 #END
 print ""
-print "::::::::::::::"
+print "SELECTED OFFERS ::::::::::::::"
 print ""
 for i,post in enumerate(selected):
     #pass
@@ -128,12 +129,3 @@ output+="</channel></rss> "
 text_file = open("/var/www/html/upworkfilter/upworkfiltered.xml", "w")
 text_file.write(output)
 text_file.close()
-
-#with open('upworkfiltered.xml', 'w') as outfile:
-    
-"""for entry in selected:
-    ## Do your processing here
-    content = entry.content[0].value
-    #clean_content = nltk.word_tokenize(content)
-    outfile.write(content)"""
-        
